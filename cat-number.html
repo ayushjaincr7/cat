@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nyaa~ 🐾🐾🐾</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ══ PAW CURSOR ══════════════════════════════════ */
+    * {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='22' rx='8' ry='6.5' fill='%23ff6eb4'/%3E%3Cellipse cx='7.5' cy='14' rx='3.3' ry='2.8' fill='%23ff6eb4'/%3E%3Cellipse cx='13' cy='10.5' rx='3.3' ry='2.8' fill='%23ff6eb4'/%3E%3Cellipse cx='19' cy='10.5' rx='3.3' ry='2.8' fill='%23ff6eb4'/%3E%3Cellipse cx='24.5' cy='14' rx='3.3' ry='2.8' fill='%23ff6eb4'/%3E%3C/svg%3E"), auto;
+    }
+
+    body {
+      background: #100d1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Nunito', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ══ FLOATING BACKGROUND CATS ════════════════════ */
+    #catBg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bcat {
+      position: absolute;
+      bottom: -60px;
+      user-select: none;
+      animation: riseUp linear infinite;
+    }
+    @keyframes riseUp {
+      0%   { transform: translateY(0)      rotate(0deg);   opacity: 0; }
+      6%   { opacity: var(--op); }
+      90%  { opacity: var(--op); }
+      100% { transform: translateY(-110vh) rotate(var(--r)); opacity: 0; }
+    }
+
+    /* ══ CORNER CATS ═════════════════════════════════ */
+    .cc {
+      position: fixed;
+      font-size: 5rem;
+      opacity: .1;
+      z-index: 0;
+      pointer-events: none;
+      filter: blur(.4px);
+      animation: ccBob 4s ease-in-out infinite;
+    }
+    .cc:nth-child(2) { animation-delay: 1s; }
+    .cc:nth-child(3) { animation-delay: 2s; }
+    .cc:nth-child(4) { animation-delay: .5s; }
+    @keyframes ccBob {
+      0%,100% { transform: var(--flip, none) translateY(0); }
+      50%     { transform: var(--flip, none) translateY(-10px); }
+    }
+
+    /* ══ WALKING CAT ═════════════════════════════════ */
+    .walkcat {
+      position: fixed;
+      bottom: 18px;
+      font-size: 2.4rem;
+      z-index: 0;
+      pointer-events: none;
+      filter: drop-shadow(0 0 12px rgba(255,110,180,.4));
+      animation: strideAcross 14s linear infinite;
+    }
+    @keyframes strideAcross {
+      0%   { left: -70px;              transform: scaleX( 1); opacity: 0; }
+      4%   {                                                   opacity: .7; }
+      46%  {                                                   opacity: .7; }
+      50%  { left: calc(100vw + 70px); transform: scaleX( 1); opacity: 0; }
+      51%  { left: calc(100vw + 70px); transform: scaleX(-1); opacity: 0; }
+      55%  {                                                   opacity: .7; }
+      96%  {                                                   opacity: .7; }
+      100% { left: -70px;              transform: scaleX(-1); opacity: 0; }
+    }
+
+    /* ══ CARD ════════════════════════════════════════ */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: #1c1430;
+      border: 1px solid rgba(255,110,180,.2);
+      border-radius: 28px;
+      padding: 2.2rem 2.4rem 2.5rem;
+      width: min(400px, 92vw);
+      text-align: center;
+      box-shadow: 0 0 80px rgba(255,110,180,.12), 0 24px 60px rgba(0,0,0,.55);
+      margin-top: 28px;
+      overflow: visible;
+    }
+
+    /* Card big ears */
+    .card-ear {
+      position: absolute;
+      top: -36px;
+    }
+    .card-ear.el { left: 26px; }
+    .card-ear.er { right: 26px; }
+    .ear-out {
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 0 24px 40px;
+      border-color: transparent transparent #1c1430;
+    }
+    .ear-in {
+      position: absolute;
+      top: 10px; left: 10px;
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 0 14px 24px;
+      border-color: transparent transparent #ff6eb4;
+    }
+
+    /* ══ CSS CAT ═════════════════════════════════════ */
+    #catWrap {
+      width: 110px;
+      margin: 0 auto 1.3rem;
+      position: relative;
+      animation: bob 3s ease-in-out infinite;
+    }
+    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    #catWrap.happy { animation: woohoo .55s cubic-bezier(.36,1.56,.64,1) forwards; }
+    @keyframes woohoo {
+      0%  {transform:scale(1)}
+      35% {transform:scale(1.18) rotate(-6deg)}
+      65% {transform:scale(.95) rotate(5deg)}
+      100%{transform:scale(1)}
+    }
+    #catWrap.hissy { animation: hisss .4s ease forwards; }
+    @keyframes hisss {
+      0%,100%{transform:rotate(0)}
+      25%    {transform:rotate(-9deg) scale(1.1)}
+      75%    {transform:rotate(9deg) scale(1.1)}
+    }
+
+    /* Head */
+    .c-head {
+      width: 88px; height: 76px;
+      background: #3b2660;
+      border-radius: 50% 50% 44% 44%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      overflow: visible;
+    }
+    .c-head::before,.c-head::after {
+      content:'';position:absolute;top:-22px;
+      border-style:solid;border-width:0 13px 22px;
+      border-color:transparent transparent #3b2660;
+    }
+    .c-head::before{left:6px} .c-head::after{right:6px}
+    .ie {
+      position:absolute;top:-15px;z-index:3;
+      border-style:solid;border-width:0 7px 13px;
+      border-color:transparent transparent #ff6eb4;
+    }
+    .ie.l{left:10px} .ie.r{right:10px}
+
+    /* Whiskers */
+    .wg { position:absolute;top:34px;display:flex;flex-direction:column;gap:5px; }
+    .wg.wl{left:-33px;align-items:flex-end}
+    .wg.wr{right:-33px;align-items:flex-start}
+    .w { display:block;width:28px;height:1.5px;background:rgba(255,255,255,.28);border-radius:2px; }
+    .wl .w:nth-child(1){transform:rotate(-7deg)} .wl .w:nth-child(3){transform:rotate(7deg)}
+    .wr .w:nth-child(1){transform:rotate(7deg)}  .wr .w:nth-child(3){transform:rotate(-7deg)}
+
+    /* Eyes */
+    .eyes { display:flex;justify-content:space-evenly;padding:18px 8px 0; }
+    .eye {
+      width:20px;height:20px;background:#ffd166;border-radius:50%;
+      position:relative;animation:blink 5s ease-in-out infinite;
+    }
+    .eye:last-child{animation-delay:.3s}
+    @keyframes blink { 0%,91%,100%{transform:scaleY(1)} 94%,97%{transform:scaleY(.08)} }
+    .pupil { position:absolute;inset:0;margin:auto;width:9px;height:14px;background:#0c0918;border-radius:50%; }
+    .shine { position:absolute;width:4px;height:4px;background:rgba(255,255,255,.9);border-radius:50%;top:3px;left:3px; }
+
+    /* Nose + mouth */
+    .nose { width:0;height:0;border-style:solid;border-width:0 4px 7px;border-color:transparent transparent #ff6eb4;margin:6px auto 0; }
+    .mouth { display:flex;justify-content:center;gap:2px;margin-top:3px; }
+    .ml,.mr { width:7px;height:5px;border:2px solid #9070b0;border-top:none;border-radius:0 0 8px 8px; }
+
+    /* Collar + bell */
+    .collar {
+      position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
+      width:62px;height:9px;background:#e03090;border-radius:5px;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .bell {
+      width:11px;height:12px;background:#ffd166;
+      border-radius:50% 50% 50% 50%/40% 40% 60% 60%;
+      margin-top:5px;position:relative;
+    }
+    .bell::after {
+      content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+      width:3px;height:3px;background:#c8a000;border-radius:50%;
+    }
+
+    /* Body */
+    .c-body {
+      width:68px;height:52px;background:#3b2660;
+      border-radius:40% 40% 50% 50%;
+      margin:-8px auto 0;position:relative;overflow:visible;z-index:1;
+    }
+    .tail {
+      position:absolute;right:-34px;bottom:4px;
+      width:50px;height:20px;
+      border:5px solid #3b2660;border-left:none;border-top:none;
+      border-radius:0 0 28px 0;
+      transform-origin:left center;animation:wag 1.6s ease-in-out infinite;
+    }
+    @keyframes wag { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(18deg)} }
+
+    /* Nya bubble */
+    #nya {
+      position:absolute;top:-8px;right:-50px;
+      background:#ff6eb4;color:#fff;
+      font-family:'Fredoka One',cursive;font-size:.78rem;
+      padding:.25rem .65rem;border-radius:12px 12px 12px 2px;
+      white-space:nowrap;pointer-events:none;
+      opacity:0;transform:scale(0);transform-origin:bottom left;
+      transition:all .22s cubic-bezier(.36,1.56,.64,1);
+    }
+    #nya.show { opacity:1;transform:scale(1); }
+
+    /* ══ TEXT ════════════════════════════════════════ */
+    h1 { font-family:'Fredoka One',cursive;font-size:1.85rem;color:#f0e8ff;line-height:1.25;margin-bottom:.3rem; }
+    h1 em { color:#ff6eb4;font-style:normal; }
+    .sub { font-size:.87rem;color:#8870a8;margin-bottom:1.5rem; }
+
+    /* ══ INPUT ═══════════════════════════════════════ */
+    .field { position:relative;margin-bottom:.85rem; }
+    .field::before { content:'🐾';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none; }
+    input {
+      width:100%;padding:13px 14px 13px 44px;
+      background:#130e24;border:2px solid rgba(255,110,180,.22);border-radius:14px;
+      color:#f0e8ff;font-family:'Nunito',sans-serif;font-size:.98rem;font-weight:700;outline:none;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    input::placeholder { color:#5a4878;font-weight:400; }
+    input:focus { border-color:#ff6eb4;box-shadow:0 0 0 4px rgba(255,110,180,.12); }
+
+    /* ══ BUTTON ══════════════════════════════════════ */
+    .btn {
+      width:100%;padding:13px;
+      background:linear-gradient(130deg,#ff6eb4 0%,#d946ef 100%);
+      border:none;border-radius:14px;color:#fff;
+      font-family:'Fredoka One',cursive;font-size:1.1rem;
+      cursor:inherit;
+      box-shadow:0 4px 22px rgba(255,110,180,.32);
+      transition:transform .15s,box-shadow .15s;letter-spacing:.3px;
+    }
+    .btn:hover { transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,110,180,.44); }
+    .btn:active { transform:scale(.97); }
+
+    /* ══ CAT FACT TICKER ══════════════════════════════ */
+    .fact { margin-top:.9rem;font-size:.75rem;color:#5a4878;min-height:1.1em;transition:opacity .4s; }
+    .fact.fade { opacity:0; }
+
+    /* ══ SUCCESS SCREEN ══════════════════════════════ */
+    #success {
+      display:none;position:fixed;inset:0;
+      background:rgba(10,7,20,.96);z-index:200;
+      flex-direction:column;align-items:center;justify-content:center;
+      gap:.55rem;cursor:inherit;
+    }
+    #success.show { display:flex;animation:fadeIn .35s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+
+    .s-cats {
+      display:flex;gap:.4rem;font-size:2.6rem;margin-bottom:.2rem;
+    }
+    .s-cats span {
+      display:inline-block;animation:dance .55s ease-in-out infinite alternate;
+    }
+    .s-cats span:nth-child(1){animation-delay:0s}
+    .s-cats span:nth-child(2){animation-delay:.1s}
+    .s-cats span:nth-child(3){animation-delay:.2s}
+    .s-cats span:nth-child(4){animation-delay:.3s}
+    .s-cats span:nth-child(5){animation-delay:.4s}
+    @keyframes dance {
+      from{transform:translateY(0) rotate(-6deg)}
+      to  {transform:translateY(-14px) rotate(6deg)}
+    }
+
+    .s-title { font-family:'Fredoka One',cursive;font-size:2.1rem;color:#f0e8ff; }
+    .s-title span{color:#ff6eb4}
+
+    .s-numbox {
+      background:rgba(255,110,180,.12);border:1.5px solid rgba(255,110,180,.35);
+      border-radius:16px;padding:.7rem 1.4rem;
+      display:flex;align-items:center;gap:.7rem;cursor:inherit;
+      transition:background .2s;position:relative;z-index:202;
+    }
+    .s-numbox:hover { background:rgba(255,110,180,.2); }
+    .s-num { font-family:'Fredoka One',cursive;font-size:1.6rem;color:#ffd166;letter-spacing:1px; }
+    .cpybtn {
+      background:rgba(255,110,180,.25);border:none;border-radius:8px;
+      padding:.3rem .7rem;color:#ff6eb4;
+      font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;
+      cursor:inherit;transition:background .15s;width:auto;box-shadow:none;
+    }
+    .cpybtn:hover{background:rgba(255,110,180,.4)} 
+    .cpybtn.ok{color:#7cfc00;background:rgba(124,252,0,.15)}
+
+    .s-sub { color:#8870a8;font-size:.93rem; }
+    .s-tap { color:#3a2a55;font-size:.72rem;margin-top:.3rem; }
+
+    /* Confetti */
+    #confetti { position:fixed;inset:0;pointer-events:none;z-index:201; }
+    .cf { position:absolute;top:-20px;animation:fall linear forwards; }
+    @keyframes fall {
+      0%  {opacity:1;transform:translateY(0) rotate(0deg)}
+      100%{opacity:0;transform:translateY(110vh) rotate(720deg)}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ BACKGROUND CAT RAIN ══ -->
+  <div id="catBg"></div>
+
+  <!-- ══ CORNER CATS ══ -->
+  <div class="cc" style="top:5%;left:2%">🐱</div>
+  <div class="cc" style="top:5%;right:2%;--flip:scaleX(-1)">😺</div>
+  <div class="cc" style="bottom:10%;left:2%;--flip:scaleX(-1)">🐈</div>
+  <div class="cc" style="bottom:10%;right:2%">🐈‍⬛</div>
+
+  <!-- ══ WALKING CAT ══ -->
+  <div class="walkcat">🐈</div>
+
+  <!-- ══ CARD ══ -->
+  <div class="card">
+
+    <!-- Big cat ears on top of card -->
+    <div class="card-ear el" aria-hidden="true">
+      <div class="ear-out"></div><div class="ear-in"></div>
+    </div>
+    <div class="card-ear er" aria-hidden="true">
+      <div class="ear-out"></div><div class="ear-in"></div>
+    </div>
+
+    <!-- CSS Cat -->
+    <div id="catWrap">
+      <div class="c-head">
+        <span class="ie l"></span><span class="ie r"></span>
+        <div class="wg wl"><span class="w"></span><span class="w"></span><span class="w"></span></div>
+        <div class="wg wr"><span class="w"></span><span class="w"></span><span class="w"></span></div>
+        <div class="eyes">
+          <div class="eye"><div class="pupil"></div><div class="shine"></div></div>
+          <div class="eye"><div class="pupil"></div><div class="shine"></div></div>
+        </div>
+        <div class="nose"></div>
+        <div class="mouth"><div class="ml"></div><div class="mr"></div></div>
+        <div class="collar"><div class="bell"></div></div>
+        <div id="nya">nya~ 🐾</div>
+      </div>
+      <div class="c-body"><div class="tail"></div></div>
+    </div>
+
+    <h1>purrr… can I have<br><em>your number?</em></h1>
+    <p class="sub">🐾 nya nya nya ~ I promise I'm a good boy 🐾</p>
+
+    <div class="field">
+      <input id="phone" type="tel" placeholder="your digits, pretty please~" />
+    </div>
+    <button class="btn" id="btn">meow here 🐱</button>
+    <p class="fact" id="fact"></p>
+  </div>
+
+  <!-- ══ SUCCESS ══ -->
+  <div id="success">
+    <div id="confetti"></div>
+    <div class="s-cats">
+      <span>😸</span><span>🐾</span><span>😻</span><span>🐾</span><span>😸</span>
+    </div>
+    <div class="s-title">yay! <span>she said meow~</span></div>
+    <div class="s-numbox" onclick="copyNum(event)">
+      <span class="s-num" id="dispNum">—</span>
+      <button class="cpybtn" id="cpybtn">copy</button>
+    </div>
+    <p class="s-sub">I'll treat you better than my cat treats me 🐾</p>
+    <p class="s-tap">tap anywhere else to go back</p>
+  </div>
+
+  <script>
+    // ══ BACKGROUND CAT RAIN ════════════════════════
+    const bg = document.getElementById('catBg');
+    const pool = [
+      {e:'🐾',w:5},{e:'🐱',w:3},{e:'🐈',w:2},{e:'😺',w:2},
+      {e:'😸',w:2},{e:'😻',w:2},{e:'🐈‍⬛',w:2},{e:'✨',w:2},
+      {e:'💕',w:2},{e:'🌙',w:1},{e:'⭐',w:1},{e:'🎀',w:1},{e:'🐟',w:1}
+    ];
+    pool.forEach(({e, w}) => {
+      for (let i = 0; i < w * 3; i++) {
+        const el = document.createElement('span');
+        el.className = 'bcat';
+        const op = (.03 + Math.random() * .08).toFixed(3);
+        el.style.cssText = `
+          left:${Math.random()*100}vw;
+          font-size:${.7+Math.random()*2}rem;
+          --op:${op};
+          --r:${(Math.random()>.5?1:-1)*(160+Math.random()*200)}deg;
+          animation-duration:${9+Math.random()*18}s;
+          animation-delay:${-Math.random()*26}s;
+        `;
+        el.textContent = e;
+        bg.appendChild(el);
+      }
+    });
+
+    // ══ CAT FACTS ══════════════════════════════════
+    const facts = [
+      '🐾 cats sleep 12–16 hours a day',
+      '🐱 a group of cats is called a clowder',
+      '😺 cats have 32 muscles in each ear',
+      '🐈 cats can make 100+ different sounds',
+      '💕 slow blinking = a cat kiss',
+      '🌙 cats can see in near-total darkness',
+      '🐾 a cat\'s purr vibrates at 25–150 Hz',
+      '😸 cats knead when they\'re happy',
+      '🎀 cats spend 50% of waking hours grooming',
+      '🐟 cats can\'t taste sweetness',
+    ];
+    let fi = 0;
+    const factEl = document.getElementById('fact');
+    factEl.textContent = facts[0];
+    setInterval(() => {
+      factEl.classList.add('fade');
+      setTimeout(() => {
+        fi = (fi + 1) % facts.length;
+        factEl.textContent = facts[fi];
+        factEl.classList.remove('fade');
+      }, 420);
+    }, 3800);
+
+    // ══ NYA BUBBLE ON FOCUS ════════════════════════
+    document.getElementById('phone').addEventListener('focus', () => {
+      const nya = document.getElementById('nya');
+      nya.classList.add('show');
+      setTimeout(() => nya.classList.remove('show'), 1600);
+    });
+
+    // ══ SUBMIT ═════════════════════════════════════
+    let saved = '';
+    document.getElementById('btn').addEventListener('click', doSubmit);
+    document.getElementById('phone').addEventListener('keydown', e => e.key==='Enter' && doSubmit());
+
+    function doSubmit() {
+      const inp = document.getElementById('phone');
+      const val = inp.value.trim();
+      if (!val) {
+        const cat = document.getElementById('catWrap');
+        cat.classList.add('hissy');
+        setTimeout(() => cat.classList.remove('hissy'), 450);
+        inp.style.borderColor = '#ff6eb4';
+        inp.style.boxShadow   = '0 0 0 5px rgba(255,110,180,.22)';
+        inp.placeholder = "hssss~ don't leave me hanging 🙀";
+        setTimeout(() => {
+          inp.style.borderColor = '';
+          inp.style.boxShadow   = '';
+          inp.placeholder = 'your digits, pretty please~';
+        }, 1400);
+        return;
+      }
+      saved = val;
+      navigator.clipboard.writeText(saved).catch(()=>{});
+      meow();
+      const cat = document.getElementById('catWrap');
+      cat.classList.add('happy');
+      setTimeout(() => cat.classList.remove('happy'), 600);
+      setTimeout(() => {
+        document.getElementById('dispNum').textContent = saved;
+        document.getElementById('cpybtn').textContent = 'copy';
+        document.getElementById('cpybtn').classList.remove('ok');
+        document.getElementById('success').classList.add('show');
+        confetti();
+      }, 460);
+    }
+
+    // ══ MEOW SOUND ═════════════════════════════════
+    function meow() {
+      try {
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        const t = ctx.currentTime;
+        osc.frequency.setValueAtTime(360, t);
+        osc.frequency.linearRampToValueAtTime(760, t+.13);
+        osc.frequency.linearRampToValueAtTime(500, t+.28);
+        osc.frequency.linearRampToValueAtTime(430, t+.48);
+        gain.gain.setValueAtTime(.22, t);
+        gain.gain.linearRampToValueAtTime(.28, t+.1);
+        gain.gain.exponentialRampToValueAtTime(.001, t+.52);
+        osc.start(t); osc.stop(t+.55);
+      } catch(e) {}
+    }
+
+    // ══ CONFETTI ═══════════════════════════════════
+    function confetti() {
+      const wrap = document.getElementById('confetti');
+      wrap.innerHTML = '';
+      const set = ['🐾','💕','✨','🌟','💗','🐱','💖','🌙','😸','🐈','😻','🎀','⭐','🐟'];
+      for (let i = 0; i < 60; i++) {
+        const el = document.createElement('span');
+        el.className = 'cf';
+        el.textContent = set[i % set.length];
+        el.style.cssText = `
+          left:${Math.random()*100}vw;
+          font-size:${.75+Math.random()*1.4}rem;
+          animation-duration:${1.3+Math.random()*2.5}s;
+          animation-delay:${Math.random()*1.1}s;
+        `;
+        wrap.appendChild(el);
+      }
+    }
+
+    // ══ COPY ═══════════════════════════════════════
+    function copyNum(e) {
+      e.stopPropagation();
+      navigator.clipboard.writeText(saved).then(() => {
+        const btn = document.getElementById('cpybtn');
+        btn.textContent = 'copied ✓';
+        btn.classList.add('ok');
+        setTimeout(() => { btn.textContent='copy'; btn.classList.remove('ok'); }, 2200);
+      });
+    }
+
+    document.getElementById('success').addEventListener('click', () => {
+      document.getElementById('success').classList.remove('show');
+      document.getElementById('phone').value = '';
+    });
+  </script>
+</body>
+</html>
