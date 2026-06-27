@@ -1,587 +1,320 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>meow meow meow 🐾</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #0d0a18;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Nunito', sans-serif;
-      overflow: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐱 sorry... (cat mode)</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d0810;--pink:#ff85a1;--soft:#ffb3c6;
+  --lav:#d4b8f0;--cream:#ffe4f0;--muted:#7a5570;--gold:#f0c88a;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--cream);font-family:'Nunito',sans-serif;overflow-x:hidden;cursor:none;}
 
-    /* ── Cat Cursor ────────────────────────────── */
-    #catCursor {
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      font-size: 1.25rem;
-      transform: translate(-5px, -5px);
-      user-select: none;
-    }
+/* CURSOR */
+#cursor{width:28px;height:28px;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;font-size:22px;transform:translate(-50%,-50%);}
 
-    /* ── Paw Trail ─────────────────────────────── */
-    .paw-trail {
-      position: fixed;
-      pointer-events: none;
-      z-index: 9998;
-      font-size: .8rem;
-      animation: pawFade .65s ease forwards;
-      user-select: none;
-    }
-    @keyframes pawFade {
-      0%   { opacity:.9; transform: scale(1) rotate(var(--r)); }
-      100% { opacity:0;  transform: scale(1.6) rotate(var(--r)); }
-    }
+/* STARS */
+#stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle ease infinite;}
+@keyframes twinkle{0%,100%{opacity:.08;transform:scale(1);}50%{opacity:.9;transform:scale(1.8);}}
 
-    /* ── BG Floaters ───────────────────────────── */
-    #pawBg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-    .fp { position: absolute; bottom: -50px; opacity: 0; animation: floatUp linear infinite; }
-    @keyframes floatUp {
-      0%  { opacity:0;   transform: translateY(0) rotate(0deg); }
-      8%  { opacity:.08; }
-      90% { opacity:.08; }
-      100%{ opacity:0;   transform: translateY(-110vh) rotate(340deg); }
-    }
+/* FLOATING PARTICLES */
+.particle{position:fixed;bottom:-50px;pointer-events:none;z-index:1;animation:floatUp linear infinite;}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0deg);opacity:0;}5%{opacity:.8;}90%{opacity:.6;}100%{transform:translateY(-110vh) rotate(360deg);opacity:0;}}
 
-    /* ── Walking Cats ──────────────────────────── */
-    @keyframes walkRight { from { left: -100px; } to { left: calc(100vw + 100px); } }
-    @keyframes walkLeft  { from { left: calc(100vw + 100px); } to { left: -100px; } }
+/* GLOW ORBS */
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(90px);animation:orb-drift ease infinite;}
+@keyframes orb-drift{0%,100%{transform:translate(0,0);}33%{transform:translate(25px,-18px);}66%{transform:translate(-18px,25px);}}
 
-    .wcat-pos { position: fixed; z-index: 15; pointer-events: auto; cursor: pointer; }
+/* WALKING CAT */
+.cat-walk-wrap{position:fixed;bottom:14px;z-index:100;pointer-events:none;animation:cat-cross 18s linear infinite;}
+@keyframes cat-cross{0%{left:-90px;}100%{left:calc(100vw + 90px);}}
+.kitty-walk{font-size:3rem;display:inline-block;animation:kitty-step .35s ease infinite alternate;filter:drop-shadow(0 0 10px rgba(255,133,161,.7));}
+@keyframes kitty-step{from{transform:translateY(0) rotate(-6deg);}to{transform:translateY(-12px) rotate(6deg);}}
 
-    .wcat-flip { display: inline-block; position: relative; animation: wcBob .38s ease-in-out infinite; }
-    .wcat-flip.rtl { animation: wcBobR .38s ease-in-out infinite; }
-    @keyframes wcBob  { 0%,100%{transform:translateY(0)   scaleX(1) } 50%{transform:translateY(-3px) scaleX(1) } }
-    @keyframes wcBobR { 0%,100%{transform:translateY(0)   scaleX(-1)} 50%{transform:translateY(-3px) scaleX(-1)} }
+/* PAW TRAIL */
+.paw-trail{position:fixed;pointer-events:none;z-index:9998;font-size:1.3rem;animation:paw-fade .7s ease forwards;}
+@keyframes paw-fade{0%{opacity:.9;transform:scale(1.4) rotate(-10deg);}100%{opacity:0;transform:scale(.5) rotate(10deg);}}
 
-    .wcat-head {
-      width: 36px; height: 30px;
-      background: var(--cc);
-      border-radius: 50%;
-      margin: 0 auto;
-      position: relative;
-      overflow: visible;
-    }
-    .wcat-head::before, .wcat-head::after {
-      content: '';
-      position: absolute; top: -9px;
-      border-style: solid;
-      border-width: 0 6px 10px;
-      border-color: transparent transparent var(--cc);
-    }
-    .wcat-head::before { left: 3px; }
-    .wcat-head::after  { right: 3px; }
-    .wcat-eyes { display: flex; justify-content: space-around; padding: 8px 7px 0; }
-    .wcat-eye  { width: 5px; height: 5px; background: #ffd166; border-radius: 50%; }
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;z-index:2;}
+.hero-cat{font-size:clamp(5.5rem,16vw,10rem);display:inline-block;animation:hero-bounce .65s ease infinite alternate;filter:drop-shadow(0 0 25px rgba(255,133,161,.7));margin-bottom:1.2rem;}
+@keyframes hero-bounce{from{transform:translateY(0) rotate(-6deg) scale(1);}to{transform:translateY(-22px) rotate(6deg) scale(1.06);}}
+.hero-title{font-family:'Dancing Script',cursive;font-size:clamp(3.5rem,11vw,7.5rem);font-weight:700;background:linear-gradient(135deg,#ffb3c6,#ff85a1 40%,#d4b8f0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.05;opacity:0;animation:pop-in .7s cubic-bezier(.34,1.56,.64,1) forwards .3s;}
+.hero-sub{font-size:clamp(.9rem,2.5vw,1.2rem);color:var(--muted);font-weight:700;letter-spacing:.1em;margin-top:1rem;opacity:0;animation:pop-in .6s ease forwards .8s;}
+.scroll-cue{position:absolute;bottom:2rem;font-family:'Dancing Script',cursive;font-size:1.1rem;color:var(--pink);opacity:0;animation:pop-in .6s ease forwards 1.4s,cue-bob 1.5s ease 2s infinite;}
+@keyframes pop-in{from{opacity:0;transform:scale(.7) translateY(12px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes cue-bob{0%,100%{transform:translateY(0);}50%{transform:translateY(8px);}}
 
-    .wcat-body {
-      width: 32px; height: 19px;
-      background: var(--cc);
-      border-radius: 40% 40% 50% 50%;
-      margin: -3px auto 0;
-      position: relative; overflow: visible;
-    }
-    .wcat-tail {
-      position: absolute;
-      left: -13px; bottom: 1px;
-      width: 16px; height: 11px;
-      border: 3px solid var(--cc);
-      border-right: none; border-top: none;
-      border-radius: 0 0 0 14px;
-      transform-origin: right center;
-      animation: wctail .8s ease-in-out infinite;
-    }
-    @keyframes wctail { 0%,100%{transform:rotate(-10deg)} 50%{transform:rotate(22deg)} }
+/* SECTIONS */
+section.scene{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1.5rem;position:relative;z-index:2;}
+.scene-label{font-family:'Dancing Script',cursive;font-size:1rem;color:var(--muted);letter-spacing:.15em;margin-bottom:1.2rem;text-align:center;}
 
-    .wcat-legs { display: flex; justify-content: space-around; padding: 0 2px; margin-top: 1px; }
-    .wcat-leg  { width: 4px; height: 10px; background: var(--cc); border-radius: 0 0 3px 3px; transform-origin: top center; }
-    .wcat-leg:nth-child(odd)  { animation: legA .35s ease-in-out infinite; }
-    .wcat-leg:nth-child(even) { animation: legA .35s ease-in-out infinite reverse; }
-    @keyframes legA { 0%,100%{transform:rotate(-22deg)} 50%{transform:rotate(22deg)} }
+/* CARDS */
+.card{max-width:640px;width:100%;padding:3.5rem 3rem;border-radius:30px;position:relative;margin-top:2rem;}
+.cat-card{
+  background:linear-gradient(145deg,rgba(42,10,55,.92),rgba(28,8,40,.92));
+  border:1.5px solid rgba(255,133,161,.22);
+  box-shadow:0 0 70px rgba(255,133,161,.09),0 0 130px rgba(180,100,230,.04),inset 0 1px 0 rgba(255,133,161,.13);
+  backdrop-filter:blur(24px);
+}
+/* Cat ear decorations */
+.cat-card::before,.cat-card::after{content:'';position:absolute;top:-20px;width:0;height:0;border-left:17px solid transparent;border-right:17px solid transparent;border-bottom:24px solid rgba(255,133,161,.28);}
+.cat-card::before{left:26px;}
+.cat-card::after{right:26px;}
 
-    /* Meow speech bubble */
-    .meow-bub {
-      position: absolute;
-      bottom: calc(100% + 5px); left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255,110,180,.9);
-      color: #fff;
-      font-family: 'Fredoka One', cursive;
-      font-size: .7rem;
-      padding: 2px 8px;
-      border-radius: 8px;
-      white-space: nowrap;
-      pointer-events: none;
-      animation: bubPop 2s ease forwards;
-      z-index: 20;
-    }
-    .meow-bub::after {
-      content: '';
-      position: absolute;
-      bottom: -4px; left: 50%; transform: translateX(-50%);
-      border: 4px solid transparent;
-      border-top-color: rgba(255,110,180,.9);
-      border-bottom: none;
-    }
-    @keyframes bubPop {
-      0%  { opacity:0; transform:translateX(-50%) scale(.7); }
-      12% { opacity:1; transform:translateX(-50%) scale(1); }
-      70% { opacity:1; }
-      100%{ opacity:0; transform:translateX(-50%) translateY(-8px); }
-    }
+.badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:.68rem;letter-spacing:.2em;padding:4px 18px;border-radius:20px;text-transform:uppercase;white-space:nowrap;background:rgba(255,133,161,.14);color:var(--pink);border:1px solid rgba(255,133,161,.32);z-index:1;}
 
-    /* ── Cat Counter Badge ──────────────────────── */
-    #catBadge {
-      position: fixed; top: 14px; right: 14px;
-      background: rgba(255,110,180,.12);
-      border: 1px solid rgba(255,110,180,.3);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-family: 'Fredoka One', cursive;
-      font-size: .82rem; color: #ff6eb4;
-      z-index: 50; pointer-events: none;
-    }
+/* TEXT */
+.cat-text{font-family:'Dancing Script',cursive;font-size:clamp(1.35rem,3.8vw,2rem);color:var(--cream);line-height:1.95;text-align:center;}
+.cat-em{color:var(--pink);font-weight:700;}
+.cat-lav{color:var(--lav);}
+.chaos-emoji{font-size:clamp(2.5rem,7vw,4.5rem);display:block;text-align:center;margin:.7rem 0;}
 
-    /* ── Card ───────────────────────────────────── */
-    .card {
-      position: relative; z-index: 10;
-      background: #1c1430;
-      border: 1px solid rgba(255,110,180,.18);
-      border-radius: 28px;
-      padding: 2.4rem 2.4rem 2.8rem;
-      width: min(400px, 92vw);
-      text-align: center;
-      box-shadow: 0 0 70px rgba(255,110,180,.1), 0 24px 60px rgba(0,0,0,.5);
-      margin-top: 30px;
-    }
-    /* Card cat ears */
-    .card::before, .card::after {
-      content: '';
-      position: absolute; top: -30px;
-      width: 0; height: 0;
-      border-style: solid;
-      border-width: 0 25px 32px;
-      border-color: transparent transparent #1c1430;
-      z-index: 11;
-    }
-    .card::before { left: 22px; }
-    .card::after  { right: 22px; }
-    .cie {
-      position: absolute; top: -21px;
-      width: 0; height: 0;
-      border-style: solid;
-      border-width: 0 15px 20px;
-      border-color: transparent transparent #ff6eb4;
-      z-index: 12;
-    }
-    .cie.l { left: 32px; }
-    .cie.r { right: 32px; }
+/* MICRO-ANIMATIONS */
+.shaking{animation:shake .22s ease infinite;}
+@keyframes shake{0%,100%{transform:rotate(-4deg);}50%{transform:rotate(4deg);}}
+.bouncing{animation:bounce-txt .4s ease infinite alternate;display:inline-block;}
+@keyframes bounce-txt{from{transform:translateY(0);}to{transform:translateY(-7px);}}
+.jelly{animation:jelly .55s ease infinite;display:inline-block;}
+@keyframes jelly{0%,100%{transform:scale(1);}25%{transform:scale(.93,1.06);}50%{transform:scale(1.06,.94);}75%{transform:scale(.96,1.04);}}
+.glow-txt{text-shadow:0 0 18px var(--pink),0 0 38px rgba(255,133,161,.35);}
+.pulse-em{animation:pulse-glow 1.5s ease infinite;}
+@keyframes pulse-glow{0%,100%{text-shadow:0 0 10px rgba(255,133,161,.3);}50%{text-shadow:0 0 30px rgba(255,133,161,.9),0 0 60px rgba(255,133,161,.4);}}
 
-    /* Corner cat paws */
-    .cc-corner { position: absolute; font-size: .9rem; opacity: .3; user-select: none; }
-    .cc-corner.tl { top: 10px;    left: 12px; }
-    .cc-corner.tr { top: 10px;    right: 12px; transform: scaleX(-1); }
-    .cc-corner.bl { bottom: 10px; left: 12px; }
-    .cc-corner.br { bottom: 10px; right: 12px; transform: scaleX(-1); }
+.sep{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--pink),transparent);margin:2rem auto;border-radius:2px;}
 
-    /* ── Main CSS Cat ───────────────────────────── */
-    #catWrap {
-      width: 110px; height: 150px;
-      margin: 0 auto 1rem;
-      position: relative;
-      animation: bob 3s ease-in-out infinite;
-      cursor: pointer;
-    }
-    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-    #catWrap.happy { animation: woohoo .55s cubic-bezier(.36,1.56,.64,1) forwards; }
-    @keyframes woohoo {
-      0%  {transform:scale(1)}
-      35% {transform:scale(1.18) rotate(-6deg)}
-      65% {transform:scale(.95) rotate(5deg)}
-      100%{transform:scale(1)}
-    }
+/* FORGIVE */
+#forgive{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4rem 2rem;position:relative;z-index:2;}
+.f-title{font-family:'Dancing Script',cursive;font-size:clamp(2.5rem,8vw,5.5rem);font-weight:700;color:var(--pink);margin-bottom:.5rem;animation:glow-pulse 2s ease infinite;}
+@keyframes glow-pulse{0%,100%{text-shadow:0 0 20px rgba(255,133,161,.4);}50%{text-shadow:0 0 50px rgba(255,133,161,.9),0 0 80px rgba(255,133,161,.3);}}
+.f-cat{font-size:5rem;display:block;margin:.8rem 0 3rem;animation:hero-bounce .65s ease infinite alternate;}
 
-    .c-head {
-      width: 88px; height: 76px;
-      background: #342256; border-radius: 50% 50% 44% 44%;
-      margin: 0 auto; position: relative; z-index: 2; overflow: visible;
-    }
-    .c-head::before, .c-head::after {
-      content: ''; position: absolute; top: -22px;
-      border-style: solid; border-width: 0 13px 22px;
-      border-color: transparent transparent #342256;
-    }
-    .c-head::before { left: 6px; }
-    .c-head::after  { right: 6px; }
-    .ie  { position: absolute; top: -15px; border-style: solid; border-width: 0 7px 13px; border-color: transparent transparent #ff6eb4; }
-    .ie.l { left: 10px; }
-    .ie.r { right: 10px; }
-    .wgrp { position: absolute; top: 34px; display: flex; flex-direction: column; gap: 5px; }
-    .wgrp.wl { left: -32px; align-items: flex-end; }
-    .wgrp.wr { right: -32px; align-items: flex-start; }
-    .w { display: block; width: 28px; height: 1.5px; background: rgba(255,255,255,.3); border-radius: 2px; }
-    .wl .w:nth-child(1){transform:rotate(-7deg)} .wl .w:nth-child(3){transform:rotate(7deg)}
-    .wr .w:nth-child(1){transform:rotate(7deg)}  .wr .w:nth-child(3){transform:rotate(-7deg)}
-    .eyes { display: flex; justify-content: space-evenly; padding: 18px 8px 0; }
-    .eye  { width: 20px; height: 20px; background: #ffd166; border-radius: 50%; position: relative; animation: blink 5s ease-in-out infinite; }
-    .eye:last-child { animation-delay: .3s; }
-    @keyframes blink { 0%,91%,100%{transform:scaleY(1)} 94%,97%{transform:scaleY(.08)} }
-    .pupil { position: absolute; inset: 0; margin: auto; width: 9px; height: 14px; background: #0c0918; border-radius: 50%; }
-    .shine { position: absolute; width: 4px; height: 4px; background: rgba(255,255,255,.85); border-radius: 50%; top: 3px; left: 3px; }
-    .nose  { width: 0; height: 0; border-style: solid; border-width: 0 4px 7px; border-color: transparent transparent #ff6eb4; margin: 6px auto 0; }
-    .mouth { display: flex; justify-content: center; gap: 2px; margin-top: 3px; }
-    .ml,.mr { width: 7px; height: 5px; border: 2px solid #9070b0; border-top: none; border-radius: 0 0 8px 8px; }
-    .c-body { width: 68px; height: 52px; background: #342256; border-radius: 40% 40% 50% 50%; margin: -8px auto 0; position: relative; overflow: visible; z-index: 1; }
-    .tail   { position: absolute; right: -34px; bottom: 4px; width: 50px; height: 20px; border: 5px solid #342256; border-left: none; border-top: none; border-radius: 0 0 28px 0; transform-origin: left center; animation: wag 1.6s ease-in-out infinite; }
-    @keyframes wag { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(18deg)} }
+.btn-yes{padding:1rem 3.5rem;background:linear-gradient(135deg,var(--pink),#c060a0);color:#fff;border:none;border-radius:50px;font-family:'Dancing Script',cursive;font-size:1.6rem;cursor:none;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 40px rgba(255,133,161,.5);display:block;margin:0 auto;}
+.btn-yes:hover{transform:scale(1.09);box-shadow:0 8px 70px rgba(255,133,161,.85);}
+.btn-no{padding:.6rem 1.8rem;background:transparent;color:var(--muted);border:1px solid rgba(122,85,112,.4);border-radius:50px;font-family:'Nunito',sans-serif;font-size:.9rem;cursor:none;margin-top:1rem;display:inline-block;transition:all .1s;}
 
-    /* Main meow pop */
-    .main-meow {
-      position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
-      background: rgba(255,110,180,.9); color: #fff;
-      font-family: 'Fredoka One', cursive; font-size: .85rem;
-      padding: 3px 10px; border-radius: 10px;
-      pointer-events: none; animation: meowFly .9s ease forwards;
-    }
-    @keyframes meowFly {
-      0%  {opacity:1; transform:translateX(-50%) translateY(0)}
-      100%{opacity:0; transform:translateX(-50%) translateY(-30px)}
-    }
+#forgiven{display:none;opacity:0;transition:opacity .8s;}
+#forgiven.show{display:block;opacity:1;}
+.forgiven-cat{font-size:5.5rem;animation:hero-bounce .65s ease infinite alternate;display:block;margin-bottom:1rem;}
+.forgiven-title{font-family:'Dancing Script',cursive;font-size:clamp(2rem,6vw,3.5rem);color:var(--pink);text-shadow:0 0 30px rgba(255,133,161,.6);}
+.forgiven-sub{font-family:'Dancing Script',cursive;font-size:1.3rem;color:var(--lav);margin-top:.8rem;}
 
-    /* Meow counter */
-    #meowCount {
-      font-family: 'Fredoka One', cursive;
-      font-size: .8rem; color: #ff6eb4;
-      min-height: 1.2rem; margin-bottom: .3rem;
-    }
-
-    /* ── Cat Divider ────────────────────────────── */
-    .catline {
-      display: flex; align-items: center; justify-content: center;
-      gap: 3px; margin: .5rem 0 .8rem;
-      font-size: .7rem; opacity: .22; letter-spacing: 1px;
-    }
-
-    /* ── Text ───────────────────────────────────── */
-    h1 { font-family: 'Fredoka One', cursive; font-size: 1.85rem; color: #f0e8ff; line-height: 1.25; margin-bottom: .2rem; }
-    h1 em { color: #ff6eb4; font-style: normal; }
-    .sub  { font-size: .88rem; color: #8870a8; margin-bottom: 1.6rem; }
-
-    /* ── Input ──────────────────────────────────── */
-    .field { position: relative; margin-bottom: .9rem; }
-    .field::before { content: '🐾'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; }
-    input  { width: 100%; padding: 13px 14px 13px 44px; background: #130e24; border: 2px solid rgba(255,110,180,.22); border-radius: 14px; color: #f0e8ff; font-family: 'Nunito', sans-serif; font-size: .98rem; font-weight: 700; outline: none; transition: border-color .2s, box-shadow .2s; }
-    input::placeholder { color: #5a4878; font-weight: 400; }
-    input:focus { border-color: #ff6eb4; box-shadow: 0 0 0 4px rgba(255,110,180,.12); }
-
-    /* ── Button ─────────────────────────────────── */
-    #btn { width: 100%; padding: 13px; background: linear-gradient(130deg, #ff6eb4, #d946ef); border: none; border-radius: 14px; color: #fff; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 22px rgba(255,110,180,.32); transition: transform .15s, box-shadow .15s; }
-    #btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,110,180,.44); }
-    #btn:active { transform: scale(.97); }
-
-    .note { margin-top: 1rem; font-size: .75rem; color: #4e3d68; }
-
-    /* ── Success Screen ─────────────────────────── */
-    #success {
-      display: none; position: fixed; inset: 0; background: rgba(10,7,20,.96);
-      z-index: 200; flex-direction: column; align-items: center; justify-content: center; gap: .7rem;
-    }
-    #success.show { display: flex; animation: fadeIn .35s ease; }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-
-    .s-cats { display: flex; gap: .2rem; font-size: 2.6rem; }
-    .s-cats span { animation: catDance .5s ease-in-out infinite; }
-    .s-cats span:nth-child(1){animation-delay:0s}   .s-cats span:nth-child(2){animation-delay:.1s}
-    .s-cats span:nth-child(3){animation-delay:.2s}   .s-cats span:nth-child(4){animation-delay:.3s}
-    .s-cats span:nth-child(5){animation-delay:.4s}   .s-cats span:nth-child(6){animation-delay:.5s}
-    .s-cats span:nth-child(7){animation-delay:.6s}
-    @keyframes catDance {
-      0%,100%{transform:translateY(0) rotate(0deg)}
-      25%    {transform:translateY(-9px) rotate(-12deg)}
-      75%    {transform:translateY(-4px) rotate(12deg)}
-    }
-    .s-title { font-family: 'Fredoka One', cursive; font-size: 2.1rem; color: #f0e8ff; }
-    .s-title span { color: #ff6eb4; }
-    .s-number-box { background: rgba(255,110,180,.12); border: 1.5px solid rgba(255,110,180,.35); border-radius: 16px; padding: .7rem 1.4rem; display: flex; align-items: center; gap: .7rem; cursor: pointer; transition: background .2s; position: relative; z-index: 202; }
-    .s-number-box:hover { background: rgba(255,110,180,.2); }
-    .s-number { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: #ffd166; letter-spacing: 1px; }
-    .copy-btn { background: rgba(255,110,180,.25); border: none; border-radius: 8px; padding: .3rem .7rem; color: #ff6eb4; font-family: 'Nunito', sans-serif; font-size: .78rem; font-weight: 700; cursor: pointer; width: auto; box-shadow: none; }
-    .copy-btn:hover { background: rgba(255,110,180,.4); }
-    .copy-btn.copied { color: #7cfc00; background: rgba(124,252,0,.15); }
-    .s-sub { color: #8870a8; font-size: .95rem; }
-    .s-tap { color: #3e2e58; font-size: .73rem; margin-top: .3rem; }
-
-    #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 201; }
-    .cf { position: absolute; top: -30px; animation: fall linear forwards; }
-    @keyframes fall { 0%{opacity:1;transform:translateY(0) rotate(0deg)} 100%{opacity:0;transform:translateY(110vh) rotate(720deg)} }
-  </style>
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(40px) scale(.96);transition:opacity .85s ease,transform .85s cubic-bezier(.34,1.3,.64,1);}
+.reveal.in{opacity:1;transform:translateY(0) scale(1);}
+</style>
 </head>
 <body>
 
-  <div id="catCursor">🐱</div>
-  <div id="pawBg"></div>
-  <div id="catBadge">🐈 <span id="catCount">0</span> cats on screen</div>
+<div id="cursor">🐾</div>
+<div id="stars"></div>
+<div id="particles"></div>
 
-  <div class="card">
-    <span class="cie l"></span>
-    <span class="cie r"></span>
-    <span class="cc-corner tl">🐾</span>
-    <span class="cc-corner tr">🐾</span>
-    <span class="cc-corner bl">🐾</span>
-    <span class="cc-corner br">🐾</span>
+<!-- Glow orbs -->
+<div class="orb" style="width:450px;height:450px;background:rgba(255,133,161,.05);top:5%;left:5%;animation-duration:9s;"></div>
+<div class="orb" style="width:350px;height:350px;background:rgba(200,140,255,.04);top:45%;right:8%;animation-duration:12s;"></div>
+<div class="orb" style="width:400px;height:400px;background:rgba(255,180,200,.03);bottom:8%;left:25%;animation-duration:10s;"></div>
 
-    <div id="catWrap">
-      <div class="c-head">
-        <span class="ie l"></span><span class="ie r"></span>
-        <div class="wgrp wl"><span class="w"></span><span class="w"></span><span class="w"></span></div>
-        <div class="wgrp wr"><span class="w"></span><span class="w"></span><span class="w"></span></div>
-        <div class="eyes">
-          <div class="eye"><div class="pupil"></div><div class="shine"></div></div>
-          <div class="eye"><div class="pupil"></div><div class="shine"></div></div>
-        </div>
-        <div class="nose"></div>
-        <div class="mouth"><div class="ml"></div><div class="mr"></div></div>
-      </div>
-      <div class="c-body"><div class="tail"></div></div>
-    </div>
+<!-- Walking cat -->
+<div class="cat-walk-wrap"><span class="kitty-walk">🐱</span></div>
 
-    <div id="meowCount"></div>
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <span class="hero-cat">😿</span>
+  <h1 class="hero-title">sorry...</h1>
+  <p class="hero-sub">🐾 a confession from one silly little cat 🐾</p>
+  <p class="scroll-cue">↓ scroll ↓</p>
+</section>
 
-    <h1>purrr… can I have<br><em>your number?</em></h1>
-    <div class="catline">🐾🐾🐾🐾🐾🐾🐾🐾🐾</div>
-    <p class="sub">I promise I'm not a cat burglar 🐾</p>
-
-    <div class="field">
-      <input id="phone" type="tel" placeholder="your digits, pretty please~" />
-    </div>
-    <button id="btn">give it here 🐾</button>
-    <p class="note">🐈 9 lives · only 1 chance to text you 🐈</p>
+<!-- ══ SCENE 1 ══ -->
+<section class="scene">
+  <p class="scene-label reveal">chapter one 🐾</p>
+  <div class="card cat-card reveal">
+    <span class="badge">🐱 the beginning</span>
+    <span class="chaos-emoji shaking">😭😭😭</span>
+    <p class="cat-text">
+      okay so...<br>
+      i messed up.<br><br>
+      like <span class="cat-em bouncing">REALLY</span> messed up.<br><br>
+      *sits in corner*<br>
+      *stares at wall*<br>
+      *knocks something off table out of shame*<br>
+      *stares at what i knocked over*<br>
+      *knocks one more thing just to feel something*<br>
+    </p>
+    <div class="sep"></div>
+    <p class="cat-text" style="font-size:1.1rem;color:var(--muted);">
+      I AM SO SORRY OKAY 🐱💔
+    </p>
   </div>
+</section>
 
-  <div id="success">
-    <div id="confetti"></div>
-    <div class="s-cats">
-      <span>🐱</span><span>🐈</span><span>😸</span><span>😻</span><span>🐈‍⬛</span><span>🐱</span><span>😺</span>
-    </div>
-    <div class="s-title">yay! <span>she said yes~</span></div>
-    <div class="s-number-box" onclick="copyNumber(event)">
-      <span class="s-number" id="displayNumber">—</span>
-      <button class="copy-btn" id="copyBtn">copy</button>
-    </div>
-    <p class="s-sub">I'll treat you better than my cat treats me</p>
-    <p class="s-tap">tap anywhere else to go back</p>
+<!-- ══ SCENE 2 ══ -->
+<section class="scene">
+  <p class="scene-label reveal">chapter two 🐾</p>
+  <div class="card cat-card reveal">
+    <span class="badge">🐱 the breakdown arc</span>
+    <span class="chaos-emoji">🐾🐾🐾</span>
+    <p class="cat-text">
+      *crying in cat*<br>
+      *crying in kitten*<br>
+      *crying in every feline dialect known to cats*<br><br>
+      <span class="cat-lav">the guilt is</span> <span class="cat-em jelly">SO heavy rn</span><br><br>
+      *looks at you with big wet eyes*<br>
+      *makes the saddest little meow*<br>
+      *refuses to move from corner*<br>
+    </p>
   </div>
+</section>
 
-  <script>
-    // ── Cat cursor ──────────────────────────────
-    const cur = document.getElementById('catCursor');
-    const isMobile = 'ontouchstart' in window;
-    if (!isMobile) {
-      document.body.style.cursor = 'none';
-      document.addEventListener('mousemove', e => {
-        cur.style.left = e.clientX + 'px';
-        cur.style.top  = e.clientY + 'px';
-        spawnTrail(e.clientX, e.clientY);
-      });
-    } else { cur.style.display = 'none'; }
+<!-- ══ SCENE 3 ══ -->
+<section class="scene">
+  <p class="scene-label reveal">chapter three 🐾</p>
+  <div class="card cat-card reveal">
+    <span class="badge">🐱 (still sorry tho)</span>
+    <span class="chaos-emoji shaking">🫵😭🫵</span>
+    <p class="cat-text">
+      B U T &nbsp; A L S O —<br>
+      you <span class="cat-em bouncing">teased me!!!</span><br><br>
+      we are BOTH victims here.<br>
+      but mostly you.<br>
+      actually wait — mostly me.<br>
+      actually actually:<br><br>
+      <span class="cat-em pulse-em glow-txt">BOTH of us. together. sorry. 🐾💕</span>
+    </p>
+  </div>
+</section>
 
-    // ── Paw trail ───────────────────────────────
-    let lastPaw = 0;
-    function spawnTrail(x, y) {
-      const now = Date.now();
-      if (now - lastPaw < 130) return;
-      lastPaw = now;
-      const el = document.createElement('span');
-      el.className = 'paw-trail';
-      el.textContent = '🐾';
-      el.style.left = (x - 8) + 'px';
-      el.style.top  = (y - 8) + 'px';
-      el.style.setProperty('--r', (Math.random()*60-30) + 'deg');
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 680);
-    }
+<!-- ══ SCENE 4 — REAL ══ -->
+<section class="scene">
+  <p class="scene-label reveal">chapter four 🐾</p>
+  <div class="card cat-card reveal">
+    <span class="badge">🐱 real talk (still in cat voice)</span>
+    <span class="chaos-emoji">🥺</span>
+    <p class="cat-text">
+      okay. no more chaos.<br>
+      just me. just you. just this. 🌸<br><br>
+      <span class="cat-lav">I'm sorry — not because I got caught,<br>
+      not because you're upset —</span><br><br>
+      but because <span class="cat-em glow-txt">you actually matter</span><br>
+      and I don't want to be the reason<br>
+      you're not okay. 🐾<br><br>
+      <span class="cat-lav">you deserved better.<br>
+      and I should have been better.</span>
+    </p>
+    <div class="sep"></div>
+    <p class="cat-text" style="font-size:.95rem;color:var(--muted);">
+      🌸 written with guilt, care & approx. 3 cat tears 🌸
+    </p>
+  </div>
+</section>
 
-    // ── BG floaters ─────────────────────────────
-    const bg = document.getElementById('pawBg');
-    ['🐾','🐾','🐾','🐾','🐾','✨','💕','🌙','⭐','🐈','🐱','🐾'].forEach(icon => {
-      for (let i = 0; i < 3; i++) {
-        const el = document.createElement('span');
-        el.className = 'fp';
-        el.textContent = icon;
-        el.style.left             = Math.random()*100 + 'vw';
-        el.style.fontSize         = (.7 + Math.random()*1.2) + 'rem';
-        el.style.animationDuration = (10 + Math.random()*14) + 's';
-        el.style.animationDelay   = (-Math.random()*22) + 's';
-        bg.appendChild(el);
-      }
-    });
+<!-- ══ FORGIVE ══ -->
+<section id="forgive">
+  <h2 class="f-title reveal">so... forgive me?</h2>
+  <span class="f-cat reveal">🥺</span>
+  <div id="btn-wrap" class="reveal" style="display:flex;flex-direction:column;align-items:center;gap:.8rem;">
+    <button class="btn-yes" onclick="onForgive()">yes, I forgive you 🌸</button>
+    <button class="btn-no" id="noBtn" onmouseover="runAway(this)">No</button>
+  </div>
+  <div id="forgiven">
+    <span class="forgiven-cat">😻</span>
+    <p class="forgiven-title">🌸 thank you 🌸</p>
+    <p class="forgiven-sub">*happy cat noises intensify* 🐾🐾🐾</p>
+  </div>
+</section>
 
-    // ── Walking cats ────────────────────────────
-    const MEOWS = ['meow~','nyaa~','purr~','mrrrow','mew!','nya!','prrrr','meow!','*chirp*','miao~'];
-    const catDefs = [
-      { color:'#5a2e7a', dur:18, delay:-2,  bot:18, rtl:false, sz:1    },
-      { color:'#c86a18', dur:12, delay:-8,  bot:24, rtl:true,  sz:.85  },
-      { color:'#2a6060', dur:22, delay:-15, bot:12, rtl:false, sz:1.1  },
-      { color:'#803030', dur:14, delay:-4,  bot:28, rtl:true,  sz:.9   },
-      { color:'#151515', dur:9,  delay:-7,  bot:20, rtl:false, sz:.8   },
-      { color:'#4a6a28', dur:17, delay:-11, bot:15, rtl:true,  sz:.95  },
-      { color:'#703868', dur:13, delay:-19, bot:30, rtl:false, sz:1.05 },
-    ];
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+});
 
-    document.getElementById('catCount').textContent = catDefs.length;
+// STARS
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 130; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const sz = Math.random() * 2.5 + .5;
+  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
+  starsEl.appendChild(s);
+}
 
-    catDefs.forEach(def => {
-      const posEl = document.createElement('div');
-      posEl.className = 'wcat-pos';
-      posEl.style.bottom = def.bot + 'px';
-      posEl.style.animation = `${def.rtl?'walkLeft':'walkRight'} ${def.dur}s linear ${def.delay}s infinite`;
+// FLOATING PARTICLES
+const pWrap = document.getElementById('particles');
+const EMOJIS = ['🐾','💕','✨','🌸','💫','🐱','⭐','💗'];
+for (let i = 0; i < 20; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  p.style.cssText = `left:${Math.random()*100}vw;font-size:${.8+Math.random()*1.2}rem;animation-duration:${10+Math.random()*14}s;animation-delay:${Math.random()*12}s;opacity:${.15+Math.random()*.35};`;
+  pWrap.appendChild(p);
+}
 
-      const flipEl = document.createElement('div');
-      flipEl.className = 'wcat-flip' + (def.rtl ? ' rtl' : '');
+// PAW TRAIL
+let lastPaw = 0;
+document.addEventListener('mousemove', e => {
+  const now = Date.now();
+  if (now - lastPaw < 320) return;
+  lastPaw = now;
+  const el = document.createElement('div');
+  el.className = 'paw-trail';
+  el.textContent = '🐾';
+  el.style.left = (e.clientX - 12) + 'px';
+  el.style.top = (e.clientY - 12) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 700);
+});
 
-      flipEl.innerHTML = `
-        <div class="wcat-head" style="--cc:${def.color}; width:${36*def.sz}px; height:${30*def.sz}px">
-          <div class="wcat-eyes"><div class="wcat-eye"></div><div class="wcat-eye"></div></div>
-        </div>
-        <div class="wcat-body" style="--cc:${def.color}; width:${32*def.sz}px; height:${19*def.sz}px">
-          <div class="wcat-tail" style="--cc:${def.color}"></div>
-        </div>
-        <div class="wcat-legs">
-          <div class="wcat-leg" style="background:${def.color}"></div>
-          <div class="wcat-leg" style="background:${def.color}"></div>
-          <div class="wcat-leg" style="background:${def.color}"></div>
-          <div class="wcat-leg" style="background:${def.color}"></div>
-        </div>
-      `;
+// SCROLL REVEAL
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-      // Random meow bubble
-      setInterval(() => {
-        if (Math.random() > .35) return;
-        const bub = document.createElement('div');
-        bub.className = 'meow-bub';
-        bub.textContent = MEOWS[Math.floor(Math.random()*MEOWS.length)];
-        flipEl.appendChild(bub);
-        setTimeout(() => bub.remove(), 2000);
-      }, 3500 + Math.random()*5000);
+// RUNAWAY NO
+let noCount = 0;
+const noBtn = document.getElementById('noBtn');
+const noMsgs = ['No 😾','Nope 🙅','Nuh-uh 🐾','Still no 😤','...no 😑','Run! 🏃💨'];
+function runAway(btn) {
+  noCount++;
+  if (noCount > 6) {
+    btn.textContent = 'fine... 😤';
+    btn.style.cssText = 'position:static;margin-top:1rem;transition:all .3s;';
+    return;
+  }
+  const mx = 80;
+  const x = mx + Math.random() * (window.innerWidth - mx * 2);
+  const y = mx + Math.random() * (window.innerHeight - mx * 2);
+  btn.style.cssText = `position:fixed;left:${x}px;top:${y}px;z-index:9990;transition:left .12s,top .12s;padding:.6rem 1.8rem;background:transparent;color:var(--muted);border:1px solid rgba(122,85,112,.4);border-radius:50px;font-family:'Nunito',sans-serif;font-size:.9rem;cursor:none;`;
+  btn.textContent = noMsgs[Math.min(noCount - 1, noMsgs.length - 1)];
+}
 
-      // Click walking cat
-      posEl.addEventListener('click', e => {
-        e.stopPropagation();
-        playMeow();
-        const bub = document.createElement('div');
-        bub.className = 'meow-bub';
-        bub.textContent = MEOWS[Math.floor(Math.random()*MEOWS.length)];
-        flipEl.appendChild(bub);
-        setTimeout(() => bub.remove(), 2000);
-      });
-
-      posEl.appendChild(flipEl);
-      document.body.appendChild(posEl);
-    });
-
-    // ── Main cat click meow ──────────────────────
-    let meowN = 0;
-    document.getElementById('catWrap').addEventListener('click', () => {
-      meowN++;
-      playMeow();
-      const cat = document.getElementById('catWrap');
-      cat.classList.add('happy');
-      setTimeout(() => cat.classList.remove('happy'), 600);
-      const pop = document.createElement('div');
-      pop.className = 'main-meow';
-      pop.textContent = MEOWS[Math.floor(Math.random()*MEOWS.length)];
-      cat.appendChild(pop);
-      setTimeout(() => pop.remove(), 900);
-      const mc = document.getElementById('meowCount');
-      mc.textContent = `meow × ${meowN}`;
-      void mc.offsetWidth; // reflow for animation restart
-    });
-
-    // ── Meow sound ───────────────────────────────
-    function playMeow() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const g   = ctx.createGain();
-        osc.connect(g); g.connect(ctx.destination);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(700, ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(1100, ctx.currentTime + .08);
-        osc.frequency.linearRampToValueAtTime(650, ctx.currentTime + .26);
-        g.gain.setValueAtTime(.22, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .32);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + .35);
-      } catch(e) {}
-    }
-
-    // ── Submit ───────────────────────────────────
-    let captured = '';
-    document.getElementById('btn').addEventListener('click', submit);
-    document.getElementById('phone').addEventListener('keydown', e => { if(e.key==='Enter') submit(); });
-
-    function submit() {
-      const inp = document.getElementById('phone');
-      if (!inp.value.trim()) {
-        inp.style.borderColor = '#ff6eb4';
-        inp.style.boxShadow   = '0 0 0 5px rgba(255,110,180,.2)';
-        inp.placeholder = "c'mon, don't be shy~ 🙈";
-        setTimeout(() => { inp.style.borderColor=''; inp.style.boxShadow=''; inp.placeholder='your digits, pretty please~'; }, 1300);
-        return;
-      }
-      captured = inp.value.trim();
-      navigator.clipboard.writeText(captured).catch(()=>{});
-      const cat = document.getElementById('catWrap');
-      cat.classList.add('happy');
-      playMeow();
-      setTimeout(() => cat.classList.remove('happy'), 600);
-      setTimeout(() => {
-        document.getElementById('displayNumber').textContent = captured;
-        document.getElementById('copyBtn').textContent = 'copy';
-        document.getElementById('copyBtn').classList.remove('copied');
-        document.getElementById('success').classList.add('show');
-        spawnRain();
-      }, 450);
-    }
-
-    function copyNumber(e) {
-      e.stopPropagation();
-      navigator.clipboard.writeText(captured).then(() => {
-        const btn = document.getElementById('copyBtn');
-        btn.textContent = 'copied ✓'; btn.classList.add('copied');
-        setTimeout(() => { btn.textContent='copy'; btn.classList.remove('copied'); }, 2000);
-      });
-    }
-
-    // ── Cat Rain ─────────────────────────────────
-    function spawnRain() {
-      const wrap = document.getElementById('confetti');
-      wrap.innerHTML = '';
-      const set = ['🐾','🐱','🐈','🐈‍⬛','😸','😻','💕','✨','🌟','💖','🎉','💗','😺','🐾','🐱'];
-      for (let i = 0; i < 65; i++) {
-        const el = document.createElement('span');
-        el.className = 'cf';
-        el.textContent = set[Math.floor(Math.random()*set.length)];
-        el.style.left             = Math.random()*100 + 'vw';
-        el.style.fontSize         = (1 + Math.random()*1.6) + 'rem';
-        el.style.animationDuration = (1.2 + Math.random()*2.5) + 's';
-        el.style.animationDelay   = (Math.random()*1.2) + 's';
-        wrap.appendChild(el);
-      }
-    }
-
-    document.getElementById('success').addEventListener('click', () => {
-      document.getElementById('success').classList.remove('show');
-      document.getElementById('phone').value = '';
-    });
-  </script>
+// FORGIVE
+function onForgive() {
+  document.getElementById('btn-wrap').style.display = 'none';
+  noBtn.style.display = 'none';
+  const fg = document.getElementById('forgiven');
+  fg.style.display = 'block';
+  requestAnimationFrame(() => fg.classList.add('show'));
+  for (let i = 0; i < 28; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      p.style.cssText = `left:${15+Math.random()*70}vw;bottom:-40px;font-size:${1.2+Math.random()*1.8}rem;animation-duration:${2+Math.random()*2}s;animation-delay:0s;position:fixed;`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 4000);
+    }, i * 70);
+  }
+}
+</script>
 </body>
 </html>
